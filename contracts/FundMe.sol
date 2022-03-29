@@ -6,8 +6,10 @@ pragma solidity ^0.6.0;
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
 
-/* Smart contract that allows anyone to deposit ETH into the contract
- * Only the owner of the contract can withdraw the ETH */
+/*
+ * Smart contract that allows anyone to deposit ETH into the contract
+ * Only the owner of the contract can withdraw the ETH
+ */
 contract FundMe {
     using SafeMathChainlink for uint256;
     // State variables
@@ -22,9 +24,11 @@ contract FundMe {
         owner = msg.sender;
     }
 
-    /* Updates addressToAmountFunded and funders state variables with the
+    /*
+     * Updates addressToAmountFunded and funders state variables with the
      * sender's account and amount of eth sent if it meets a minimum USD
-     * value; else throws exception */
+     * value; else throws exception
+     */
     function fund() public payable {
         // 18 digit number
         uint256 minimumUSD = 50 * 10**18;
@@ -74,8 +78,7 @@ contract FundMe {
         _;
     }
 
-    // Withdraws funds sent to this contract account.
-    // Only the owner can withdraw.
+    // Withdraws funds sent to this contract account; only the owner can withdraw
     function withdraw() public payable onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
         // Iterate through and nullify all of the mappings
