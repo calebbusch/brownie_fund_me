@@ -18,7 +18,7 @@ contract FundMe {
     address public owner;
     AggregatorV3Interface public priceFeed;
 
-    // Set the owner as the account that deploys the contract
+    // Set the owner as the account that deployed the contract
     constructor(address _priceFeed) public {
         priceFeed = AggregatorV3Interface(_priceFeed);
         owner = msg.sender;
