@@ -30,12 +30,11 @@ contract FundMe {
      * value; else throws exception
      */
     function fund() public payable {
-        // 18 digit number
         uint256 minimumUSD = 50 * 10**18;
         // If minimum amount of eth is not sent, throw exception and revert state
         require(
             getConvertedUSDValue(msg.value) >= minimumUSD,
-            "You need to spend more ETH!"
+            "You need to spend more ETH."
         );
         // Else add to map and funders state variables
         addressToAmountFunded[msg.sender] += msg.value;
@@ -47,29 +46,31 @@ contract FundMe {
         return priceFeed.version();
     }
 
-    // Returns the ETH/USD rate with 18 digits
+    // Returns the ETH/USD rate * 10^18
     function getPrice() public view returns (uint256) {
         (, int256 answer, , , ) = priceFeed.latestRoundData();
-        return uint256(answer * 10000000000);
+        // Convert 10^8 to 10^18
+        return uint256(answer * 10**10);
     }
 
-    // Returns the USD value of an ether amount
-    function getConvertedUSDValue(uint256 ethAmount)
+    // Returns the USD value of a wei amount
+    function getConvertedUSDValue(uint256 weiAmount)
         public
         view
         returns (uint256)
     {
         uint256 ethPrice = getPrice();
-        uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1000000000000000000;
+        // (10^18 * 10^18) / 10^18
+        uint256 ethAmountInUsd = (ethPrice * weiAmount) / 10**18;
         return ethAmountInUsd;
     }
 
-    // Returns minimum amount required to donate in terms of ether
+    // Returns minimum amount required to donate in terms of wei
     function getEntranceFee() public view returns (uint256) {
-        uint256 minimumUSD = 50 * 10**18;
-        uint256 price = getPrice();
-        uint256 precision = 1 * 10**18;
-        return ((minimumUSD * precision) / price) + 1;
+        uint256 minimumUSD = 50 * (10**18);
+        uint256 ethPrice = getPrice();
+        // (10^18 * 10^18) / 10^18
+        return (minimumUSD * 10**18) / ethPrice;
     }
 
     // Is the message sender the owner of the contract?
